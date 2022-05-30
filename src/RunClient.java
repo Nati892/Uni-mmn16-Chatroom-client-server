@@ -7,7 +7,6 @@ public class RunClient {
     public static void main(String[] args) {
         Socket s = null;
         try {
-
             s = new Socket("127.0.0.1", port);
             new ClientIThreadio(s).start();
             s.close();
