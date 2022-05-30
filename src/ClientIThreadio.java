@@ -20,7 +20,5 @@ public class ClientIThreadio extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }

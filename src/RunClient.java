@@ -1,9 +1,9 @@
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class RunClient {
     private static final int port = 8088;
+
     public static void main(String[] args) {
         Socket s = null;
         try {
