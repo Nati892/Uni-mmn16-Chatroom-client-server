@@ -39,4 +39,15 @@ public class ServerWaitingRoom {
 
     }
 
+    public synchronized String getParticipants(ClientThread client) {
+        String partList = "Current participants: ";
+        for (ClientThread c : this.waitingRoom
+        ) {
+            if (!c.equals(client))
+                partList += c.getClientName() + ", ";
+        }
+        partList += "You\n";
+        return partList;
+    }
+
 }

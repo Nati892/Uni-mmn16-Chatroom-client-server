@@ -78,4 +78,11 @@ public class ClientIThreadio extends Thread {
         }
 
     }
+
+    public void Disconnect() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+        }
+    }
 }

@@ -37,10 +37,11 @@ public class ClientThread extends Thread {
         try {
             sendMessageToClient("Please enter your name");
             receivedMessage = bufferedReader.readLine();
-            if (receivedMessage != null)
-            {
-                this.clientName=receivedMessage.trim();
-                receiveMessageFromClient(receivedMessage + " has joined!");}
+            if (receivedMessage != null) {
+                this.clientName = receivedMessage.trim();
+                receiveMessageFromClient(receivedMessage + " has joined!");
+                this.sendMessageToClient(waitingRoom.getParticipants(this));
+            }
 
             while (socket.isConnected() && !socket.isClosed() && receivedMessage != null) {
                 receivedMessage = bufferedReader.readLine();
@@ -56,7 +57,7 @@ public class ClientThread extends Thread {
     }
 
     public void receiveMessageFromClient(String message) {
-        waitingRoom.publishMessage(this, clientName+": "+message);
+        waitingRoom.publishMessage(this, clientName + ": " + message);
     }
 
 
@@ -84,7 +85,11 @@ public class ClientThread extends Thread {
     }
 
     private void killClient() {
-        System.out.println("killed client");
+        System.out.println("client " + this.clientName + " was removed");
         waitingRoom.removeClient(this);
+    }
+
+    public String getClientName(){
+        return this.clientName;
     }
 }
