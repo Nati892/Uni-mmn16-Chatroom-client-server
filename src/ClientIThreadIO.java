@@ -25,6 +25,7 @@ public class ClientIThreadIO extends Thread {
 
     @Override
     public void run() {
+        super.run();
         try {
             while (socket.isConnected() && !socket.isClosed()) {
                 String msgFromChat = null;
