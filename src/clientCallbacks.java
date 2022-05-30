@@ -1,4 +1,4 @@
-public interface Clientable
+public interface clientCallbacks
 {
     public void connectionLost();
     public void receivedMessage(String msg);

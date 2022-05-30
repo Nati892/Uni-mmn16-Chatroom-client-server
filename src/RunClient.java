@@ -5,8 +5,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
-
-
 public class RunClient extends Application {
 
     public void start(Stage primaryStage) throws Exception {
@@ -21,10 +19,6 @@ public class RunClient extends Application {
 
 
     public static void main(String[] args) {
-launch(args);
-
-
-
-
+        launch(args);
     }
 }

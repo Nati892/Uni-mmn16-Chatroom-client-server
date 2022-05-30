@@ -3,7 +3,7 @@ import javafx.application.Platform;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientIThreadio extends Thread {
+public class ClientIThreadIO extends Thread {
     public static int CONNECTION_STATUS_FAILED = 0;
     public static int CONNECTION_STATUS_SUCCESS = 1;
 
@@ -11,11 +11,11 @@ public class ClientIThreadio extends Thread {
     private BufferedReader bufferedReader;
     private int connectionStatus = CONNECTION_STATUS_FAILED;
     private Socket socket = null;
-    private Clientable client;
+    private clientCallbacks client;
 
-    public ClientIThreadio(String serverIp, int serverPort, Clientable client) throws IOException {
+    public ClientIThreadIO(String serverIp, int serverPort, clientCallbacks client) throws IOException {
         this.client = client;
-        this.socket = socket = new Socket(serverIp, serverPort);
+        this.socket =  new Socket(serverIp, serverPort);//attempt to start socket
         this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         if (socket.isConnected() && !socket.isClosed())
@@ -33,7 +33,7 @@ public class ClientIThreadio extends Thread {
                     break;
                 else {
                     String finalMsgFromChat = msgFromChat;
-                    Platform.runLater(() -> {
+                    Platform.runLater(() -> {//activate callback on the io thread!
                         client.receivedMessage(finalMsgFromChat);
                     });
 
@@ -42,7 +42,7 @@ public class ClientIThreadio extends Thread {
 
         } catch (IOException e) {
         } finally {
-            Platform.runLater(() -> {
+            Platform.runLater(() -> {//activate callback on the io thread!
                 ConnectionLost();
             });
         }
@@ -50,6 +50,12 @@ public class ClientIThreadio extends Thread {
 
     }
 
+    /**
+     * send message to server
+     *
+     * @param msg String message
+     * @throws IOException if failed to send message then throws exception
+     */
     public void SendMessage(String msg) throws IOException {
         if (socket.isConnected() && !socket.isClosed()) {
             bufferedWriter.write(msg);
@@ -63,9 +69,9 @@ public class ClientIThreadio extends Thread {
         return this.connectionStatus;
     }
 
+    //close connection
     private void ConnectionLost() {
         client.connectionLost();
-
         try {
             bufferedReader.close();
         } catch (IOException e) {
@@ -79,6 +85,9 @@ public class ClientIThreadio extends Thread {
 
     }
 
+    /**
+     * disconnect client from server
+     */
     public void Disconnect() {
         try {
             socket.close();

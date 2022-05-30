@@ -6,8 +6,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 
-public class ClientPanelController implements Clientable {
-    private ClientIThreadio clientIO;
+public class ClientPanelController implements clientCallbacks {
+    private ClientIThreadIO clientIO;
 
     @FXML
     private Label LabelConnectionStatus;
@@ -32,51 +32,46 @@ public class ClientPanelController implements Clientable {
 
     @FXML
     void initialize() {
-
+        //disable chatRoom functionality
         TFMessage.setDisable(true);
         BTNSendMessage.setDisable(true);
     }
 
     @FXML
     void BTNConnectOnClick(ActionEvent event) {
-        if (BTNConnect.getText().equals("Connect")) {
+        if (BTNConnect.getText().equals("Connect")) {//if not connected then attempt to connect
             try {
-                if (TFServerIp.getText().trim().length() > 0 && TFServerPort.getText().trim().length() > 0) {
-                    System.out.println("attempting");//TODO del line
-                    this.clientIO = new ClientIThreadio(TFServerIp.getText().trim(), Integer.parseInt(TFServerPort.getText().trim()), this);
-
+                if (TFServerIp.getText().trim().length() > 0 && TFServerPort.getText().trim().length() > 0) {//only attempt to connect if address and port textFields are non empty
+                    this.clientIO = new ClientIThreadIO(TFServerIp.getText().trim(), Integer.parseInt(TFServerPort.getText().trim()), this);
                 }
             } catch (Exception e) {
             } finally {
                 if (clientIO != null)
-                    if (clientIO.getConnectionStatus() == ClientIThreadio.CONNECTION_STATUS_FAILED) {
+                    if (clientIO.getConnectionStatus() == ClientIThreadIO.CONNECTION_STATUS_FAILED) {
                         this.clientIO = null;
                     } else {
                         clientIO.start();
                     }
             }
 
-            if (clientIO != null) {
+            if (clientIO != null) {//connection successful, allows sending messages and disconnection
                 BTNConnect.setText("Disconnect");
                 TFMessage.setDisable(false);
                 BTNSendMessage.setDisable(false);
-            } else {
-                //TODO connection failed
             }
         } else {
-            connectionLost();
-            BTNConnect.setText("Connect");
+            if (clientIO != null) {
+                clientIO.Disconnect();
         }
-    }
+    }}
 
     @FXML
     void BTNSendMessageOnClick(ActionEvent event) {
-        if (clientIO != null && TFMessage.getText().trim().length() > 0) {
+        if (clientIO != null && TFMessage.getText().trim().length() > 0) {//if message TF is non-empty then attempt to send message
             try {
-
-
                 clientIO.SendMessage(TFMessage.getText().trim());
             } catch (Exception e) {
+                MessagesBox.getItems().add("Local: Failed to send message!");
             }
         }
     }
@@ -88,13 +83,14 @@ public class ClientPanelController implements Clientable {
             clientIO.Disconnect();
             clientIO = null;
         }
+        MessagesBox.getItems().add("Connection closed");
+        BTNConnect.setText("Connect");
         TFMessage.setDisable(true);
         BTNSendMessage.setDisable(true);
     }
 
     @Override
     public void receivedMessage(String msg) {
-        System.out.println(msg);
         MessagesBox.getItems().add(msg);
         MessagesBox.scrollTo(MessagesBox.getItems().size() - 1);
     }

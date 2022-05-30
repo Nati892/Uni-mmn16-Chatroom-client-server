@@ -35,7 +35,7 @@ public class ClientThread extends Thread {
     public void ListenToClient() {
         String receivedMessage = "";
         try {
-            sendMessageToClient("Please enter your name");
+            sendMessageToClient("Please enter your name");//ask for name and send all current participants
             receivedMessage = bufferedReader.readLine();
             if (receivedMessage != null) {
                 this.clientName = receivedMessage.trim();
@@ -44,7 +44,7 @@ public class ClientThread extends Thread {
             }
 
             while (socket.isConnected() && !socket.isClosed() && receivedMessage != null) {
-                receivedMessage = bufferedReader.readLine();
+                receivedMessage = bufferedReader.readLine();//listen for messages from client
                 if (receivedMessage != null) {
                     receiveMessageFromClient(receivedMessage);
                 }
@@ -56,23 +56,26 @@ public class ClientThread extends Thread {
         }
     }
 
-    public void receiveMessageFromClient(String message) {
-        waitingRoom.publishMessage(this, clientName + ": " + message);
+    private void receiveMessageFromClient(String message) {
+        waitingRoom.publishMessage( clientName + ": " + message);
     }
 
-
+    /**
+     * sends a strin to the client
+     * @param message String to be sent
+     */
     public synchronized void sendMessageToClient(String message) {
         try {
             this.bufferedWriter.write(message);
             this.bufferedWriter.newLine();
             this.bufferedWriter.flush();
-
         } catch (IOException e) {
             System.out.println("failed to send message");
         }
     }
 
-    public void closeClientIO() {
+
+    private void closeClientIO() {
         try {
             bufferedReader.close();
         } catch (IOException e) {
